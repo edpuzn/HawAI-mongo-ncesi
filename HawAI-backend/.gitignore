@@ -1,0 +1,36 @@
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+*.so
+*.egg-info/
+*.egg
+.build/
+.dist/
+
+# Envs
+.env
+.venv/
+venv/
+ENV/
+
+# Tools
+.pytest_cache/
+.mypy_cache/
+.cache/
+
+# IDE
+.vscode/
+.idea/
+.DS_Store
+
+# Byte-compiled / optimized / DLL files
+*.log
+
+# Coverage
+htmlcov/
+.coverage*
+
+# Docker
+**/.dockerignore
