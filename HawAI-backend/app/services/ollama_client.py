@@ -22,10 +22,15 @@ class OllamaClient:
             return False
 
     async def generate(self, prompt: str, user_meta: Dict[str, Any] | None = None) -> str:
-        # Using /api/generate for a simple completion; adjust if using chat endpoint.
+        # Use role-based chat API so Modelfile SYSTEM ve şablonları daha iyi uygulanır
+        messages: list[dict[str, str]] = []
+        if settings.system_prompt:
+            messages.append({"role": "system", "content": settings.system_prompt})
+        messages.append({"role": "user", "content": prompt})
+
         payload = {
             "model": self.model,
-            "prompt": prompt,
+            "messages": messages,
             "stream": False,
             "options": {
                 "temperature": 0.2,
@@ -33,10 +38,27 @@ class OllamaClient:
         }
         if user_meta:
             payload["metadata"] = user_meta
-        resp = await self._client.post("/api/generate", json=payload)
+        resp = await self._client.post("/api/chat", json=payload)
         resp.raise_for_status()
         data = resp.json()
-        return data.get("response", "")
+        # Ollama /api/chat döndürdüğü yapı: { message: { role, content }, ... }
+        message = data.get("message") or {}
+        return message.get("content", "")
+
+    async def chat_messages(self, messages: list[dict[str, str]], temperature: float = 0.2) -> str:
+        payload = {
+            "model": self.model,
+            "messages": messages,
+            "stream": False,
+            "options": {
+                "temperature": temperature,
+            },
+        }
+        resp = await self._client.post("/api/chat", json=payload)
+        resp.raise_for_status()
+        data = resp.json()
+        message = data.get("message") or {}
+        return message.get("content", "")
 
     async def aclose(self) -> None:
         await self._client.aclose()

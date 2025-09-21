@@ -13,7 +13,9 @@ def _parse_origins(value: str | None) -> List[str]:
 @dataclass
 class Settings:
     ollama_host: str = os.getenv("OLLAMA_HOST", "http://localhost:11434")
-    model_name: str = os.getenv("MODEL_NAME", "llama3.1")
+    model_name: str = os.getenv("MODEL_NAME", "hawai-sdg3")
+    system_prompt: str | None = os.getenv("SYSTEM_PROMPT")
+    compat_api_key: str | None = os.getenv("COMPAT_API_KEY", "demo-key")
     allowed_origins: List[str] = None  # type: ignore[assignment]
     rate_limit_per_minute: int = int(os.getenv("RATE_LIMIT_PER_MINUTE", "60"))
     # New
